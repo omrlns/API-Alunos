@@ -49,8 +49,14 @@ def capturarDados():
     
     return dadosAlunos
 
-def validarDados(nome, nascimento, matricula, email, senha):
+def validarDados(dadosAlunos):
     erros = []
+
+    nome = dadosAlunos['nome']
+    nascimento = dadosAlunos['nascimento']
+    matricula = dadosAlunos['matricula']
+    email = dadosAlunos['email']
+    senha = dadosAlunos['senha']
 
     # validação do nome
     # verificando se a variável "nome" está vazia
@@ -95,24 +101,16 @@ def validarDados(nome, nascimento, matricula, email, senha):
     else:
         return True, '\nDADOS VALIDADOS COM SUCESSO!'
     
-def cadastrar(nome, nascimento, matricula, email, senha):
+def cadastrar(dadosAlunos):
     print('\n' + '=' * 10  + ' PROCESSO DE CADASTRO ' + '=' * 10)
-    print('NOME: {}'.format(nome))
-    print('DATA DE NASCIMENTO: {}'.format(nascimento))
-    print('MATRÍCULA: {}'.format(matricula))
-    print('E-MAIL: {}'.format(email))    
-    print('SENHA: {}'.format(senha))
+    print('NOME: {}'.format(dadosAlunos['nome']))
+    print('DATA DE NASCIMENTO: {}'.format(dadosAlunos['nascimento']))
+    print('MATRÍCULA: {}'.format(dadosAlunos['matricula']))
+    print('E-MAIL: {}'.format(dadosAlunos['email']))    
+    print('SENHA: {}'.format(dadosAlunos['senha']))
 
-def armazenar(nome, nascimento, matricula, email, senha):
-    aluno = {
-        'nome': nome,
-        'nascimento': nascimento,
-        'matricula': matricula,
-        'email': email,
-        'senha': senha
-    }
-
-    alunosCadastrados.append(aluno)
+def armazenar(dadosAlunos):
+    alunosCadastrados.append(dadosAlunos)
     print('\nCADASTRO ARMAZENADO COM SUCESSO')
 
 def listarAlunos():
@@ -124,7 +122,7 @@ def listarAlunos():
         return
     
     for i, aluno in enumerate(alunosCadastrados):
-        print('=' * 10  + ' REGISTROS ' + '=' * 10)
+        print('\n' + '=' * 10  + ' REGISTRO ' + '=' * 10)
         print(f'\aALUNO #{i+1}:')
         print('NOME: {}'.format(aluno['nome']))
         print('DATA DE NASCIMENTO: {}'.format(aluno['nascimento']))
@@ -142,28 +140,10 @@ def executarSistema():
             dadosAlunos = capturarDados()
 
             # validar dados
-            valido = validarDados(
-                dadosAlunos['nome'], 
-                dadosAlunos['nascimento'],
-                dadosAlunos['matricula'],
-                dadosAlunos['email'],
-                dadosAlunos['senha']
-                )
+            valido = validarDados(dadosAlunos)
             if valido:
-                cadastrar(
-                    dadosAlunos['nome'], 
-                    dadosAlunos['nascimento'],
-                    dadosAlunos['matricula'],
-                    dadosAlunos['email'],
-                    dadosAlunos['senha']
-                )
-                armazenar(
-                    dadosAlunos['nome'], 
-                    dadosAlunos['nascimento'],
-                    dadosAlunos['matricula'],
-                    dadosAlunos['email'],
-                    dadosAlunos['senha']
-                )
+                cadastrar(dadosAlunos)
+                armazenar(dadosAlunos)
             else:
                 print('\nCADASTRO NÃO REALIZADO DEVIDO A ERROS NOS DADOS!')
 
