@@ -38,8 +38,17 @@ def capturarDados():
     matricula = str(input('MATRÍCULA: ')).strip()
     email = str(input('E-MAIL: ')).strip()
     senha = str(input('SENHA: ')).strip()
-    return nome, nascimento, matricula, email, senha
     
+    dadosAlunos = {
+        'nome': nome,
+        'nascimento': nascimento,
+        'matricula': matricula,
+        'email': email,
+        'senha': senha
+        }
+    
+    return dadosAlunos
+
 def validarDados(nome, nascimento, matricula, email, senha):
     erros = []
 
@@ -130,13 +139,31 @@ def executarSistema():
     while True:
         opcao = selecionarMenu()
         if (opcao == 1): # cadastrar aluno
-            nome, nascimento, matricula, email, senha = capturarDados()
+            dadosAlunos = capturarDados()
 
             # validar dados
-            valido = validarDados(nome, nascimento, matricula, email, senha)
+            valido = validarDados(
+                dadosAlunos['nome'], 
+                dadosAlunos['nascimento'],
+                dadosAlunos['matricula'],
+                dadosAlunos['email'],
+                dadosAlunos['senha']
+                )
             if valido:
-                cadastrar(nome, nascimento, matricula, email, senha)
-                armazenar(nome, nascimento, matricula, email, senha)
+                cadastrar(
+                    dadosAlunos['nome'], 
+                    dadosAlunos['nascimento'],
+                    dadosAlunos['matricula'],
+                    dadosAlunos['email'],
+                    dadosAlunos['senha']
+                )
+                armazenar(
+                    dadosAlunos['nome'], 
+                    dadosAlunos['nascimento'],
+                    dadosAlunos['matricula'],
+                    dadosAlunos['email'],
+                    dadosAlunos['senha']
+                )
             else:
                 print('\nCADASTRO NÃO REALIZADO DEVIDO A ERROS NOS DADOS!')
 
