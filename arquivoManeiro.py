@@ -1,5 +1,6 @@
 import os, re, csv
 from datetime import datetime
+from functools import reduce
 
 CSV_FILE = 'registros.csv'
 
@@ -12,7 +13,8 @@ def exibirMenu():
     [ 1 ] - CADASTRAR ALUNO
     [ 2 ] - LISTAR ALUNOS
     [ 3 ] - PESQUISAR ALUNO POR NOME
-    [ 4 ] - SAIR
+    [ 4 ] - QUANTIDADE DE ALUNOS CADASTRADOS
+    [ 5 ] - SAIR
     ''')
 
 def selecionarMenu():
@@ -22,7 +24,7 @@ def selecionarMenu():
     while True:
         try:
             opcao = int(input('ESCOLHA UMA OPÇÃO PARA PROSSEGUIR: '))
-            if (opcao >= 1 and opcao <= 4): # Faixa de opções atualizada para 1 a 4
+            if (opcao >= 1 and opcao <= 5):
                 return opcao
             else:
                 print('OPÇÃO INVÁLIDA! POR FAVOR, ESCOLHA UMA DAS OPÇÕES DO MENU.')
@@ -175,11 +177,30 @@ def pesquisarPorNome():
     
     input('\nPRESSIONE "ENTER" PARA CONTINUAR...')
 
+def contarAlunos():
+    limparTela()
+
+    alunos = carregarAlunosCSV()
+
+    if not alunos:
+        quantidade = 0
+    else:
+        quantidade = reduce(lambda contador, aluno: contador + 1, alunos, 0)
+
+    print('=' * 10 + ' QUANTIDADE DE ALUNOS ' + '=' * 10)
+    if quantidade == 0:
+        print('\nNÃO HÁ NENHUM ALUNO CADASTRADO!.')
+    else:
+        print(f'\nTOTAL DE ALUNOS CADASTRADOS: {quantidade}')
+    
+    input('\nPRESSIONE "ENTER" PARA CONTINUAR...')
+
+
 def executarSistema():
 
     while True:
         opcao = selecionarMenu()
-        if (opcao == 1): # cadastrar aluno
+        if (opcao == 1):
             dadosAlunos = capturarDados()
 
             valido, mensagem = validarDados(dadosAlunos) 
@@ -191,13 +212,16 @@ def executarSistema():
 
             input('\nPRESSIONE "ENTER" PARA CONTINUAR...')
 
-        elif (opcao == 2): # listar os alunos
+        elif (opcao == 2):
             listarAlunos()
         
         elif (opcao == 3):
             pesquisarPorNome()
 
         elif (opcao == 4):
+            contarAlunos()
+
+        elif (opcao == 5):
             limparTela()
             print('\nSAINDO DO PROGRAMA...')
             break
