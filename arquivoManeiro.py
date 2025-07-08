@@ -99,8 +99,8 @@ def salvarAlunoCSV(aluno):
     file_exists = os.path.exists(CSV_FILE)
     
     with open(CSV_FILE, mode='a', newline='', encoding='utf-8') as file:
-        fieldnames = ['nome', 'nascimento', 'matricula', 'email', 'senha']
-        writer = csv.DictWriter(file, fieldnames=fieldnames)
+        header = ['nome', 'nascimento', 'matricula', 'email', 'senha']
+        writer = csv.DictWriter(file, fieldnames=header)
 
         if not file_exists:
             writer.writeheader()
