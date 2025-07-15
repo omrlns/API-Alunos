@@ -1,0 +1,23 @@
+# query para visualizar os 10 primeiros registros da arquivo:
+
+SELECT * FROM READ_CSV_AUTO('registros.csv', HEADER=true, ENCODING='UTF-8') LIMIT 10;
+
+# query para consultar um aluno por nome:
+
+SELECT * FROM 'registros.csv' WHERE nome LIKE '%MAR%';
+
+SELECT * FROM READ_CSV_AUTO('registros.csv', columns = {'nome': 'VARCHAR', 'nascimento': 'VARCHAR', 'matricula': 'INTEGER', 'email': 'VARCHAR', 'senha': 'VARCHAR'}) WHERE nome LIKE '%MAR%';
+
+# query para consultar alunos maiores de idade:
+
+SELECT * FROM 'registros.csv' WHERE age(nascimento) >= INTERVAL '18 year';
+SELECT * FROM 'registros.csv' WHERE age(nascimento) >= INTERVAL '25year';
+SELECT * FROM 'registros.csv' WHERE age(nascimento) >= INTERVAL '30 year';
+SELECT * FROM 'registros.csv' WHERE age(nascimento) >= INTERVAL '35 year';
+
+SELECT * FROM READ_CSV_AUTO('alunos.csv', columns = {'nome': 'VARCHAR', 'nascimento': 'VARCHAR', 'matricula': 'INTEGER', 'email': 'VARCHAR', 'senha': 'VARCHAR'}) WHERE age(STRPTIME(nascimento, '%d/%m/%Y')) >= INTERVAL '18 year';
+
+# query para contar quantos alunos estão de aniversário em um dia:
+
+SELECT COUNT(*) FROM READ_CSV_AUTO('alunos.csv', columns = {'nome': 'VARCHAR', 'nascimento': 'VARCHAR', 'matricula': 'INTEGER', 'email': 'VARCHAR', 'senha': 'VARCHAR'}) WHERE STRFTIME(STRPTIME(nascimento, '%d/%m/%Y'), '%d/%m') = STRFTIME(CURRENT_DATE, '%d/%m');
+
