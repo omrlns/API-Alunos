@@ -4,7 +4,7 @@ import duckdb
 from fastapi import FastAPI, HTTPException, Query
 
 CSV_FILE = 'registros.csv'
-app = FastAPI()
+app = FastAPI() # uvicorn app:app --reload -> para iniciar a aplicação
 
 def limparTela():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -175,13 +175,6 @@ async def listarAniversariantesHoje():
     if not alunosEncontrados:
         raise HTTPException(status_code=404, detail='NENHUM ALUNO FAZ ANIVERSÁRIO HOJE.')
     
-    alunosFormatados = []
-    for alunoT in alunosEncontrados:
-        alunosFormatados.append({
-            'nome': alunoT[0],
-            'nascimento': alunoT[1],
-            'matricula': alunoT[2],
-            'email': alunoT[3],
-            'senha': alunoT[4]
-        })
-    return alunosFormatados
+    # mapeando apenas nome e nascimento
+    aniversariantes = list(map(lambda aluno: {'nome': aluno[0], 'nascimento': aluno[1]}, alunosEncontrados))
+    return aniversariantes
