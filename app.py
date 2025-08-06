@@ -1,7 +1,7 @@
 import os, re, csv
 from datetime import datetime
 import duckdb
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Body
 
 CSV_FILE = 'registros.csv'
 app = FastAPI() # uvicorn app:app --reload -> para iniciar a aplicação
@@ -22,16 +22,38 @@ def carregarAlunosCSV():
     return alunos
 
 def salvarAlunoCSV(aluno: dict):
-    file_exists = os.path.exists(CSV_FILE)
-    
-    with open(CSV_FILE, mode='a', newline='', encoding='utf-8') as file:
+    # adiciona um novo aluno ao CSV.
+    # carrega todos os alunos existentes, adiciona o novo e reescreve o arquivo.
+    alunos = carregarAlunosCSV()
+    alunos.append(aluno)
+    reescreverCSV(alunos)
+
+def reescreverCSV(alunos: list):
+    # reescreve todo o arquivo CSV com a lista de alunos fornecida.
+    with open(CSV_FILE, mode='w', newline='', encoding='utf-8') as file:
         header = ['nome', 'nascimento', 'matricula', 'email', 'senha']
         writer = csv.DictWriter(file, fieldnames=header)
+        writer.writeheader()
+        writer.writerows(alunos)
 
-        if not file_exists:
-            writer.writeheader() # escreve o cabeçalho se o arquivo for novo
+def atualizarAlunoCSV(matricula: str, dadosAtualizados: dict):
+    # atualiza os dados de um aluno existente pela matrícula.
+    # retorna True se o aluno foi encontrado e atualizado, False caso contrário.
 
-        writer.writerow(aluno)
+    alunos = carregarAlunosCSV()
+    encontrado = False
+    for i, aluno in enumerate(alunos):
+        if aluno.get('matricula') == matricula:
+            # atualiza apenas os campos fornecidos em dados_atualizados
+            for key, value in dadosAtualizados.items():
+                if key in aluno: # garante que apenas campos válidos sejam atualizados
+                    alunos[i][key] = value
+            encontrado = True
+            break
+    if encontrado:
+        reescreverCSV(alunos)
+        return True
+    return False
 
 def validarDados(dadosAlunos):
     erros = []
@@ -209,3 +231,31 @@ async def atualizarAlunoCompleto(matricula: str, novosDados: dict):
         writer.writerows(alunos)
 
     return {'mensagem': 'DADOS DO ALUNO ATUALIZADOS COM SUCESSO!'}
+
+@app.patch('/alunos/{matricula}')
+async def atualizarAlunoParcial(matricula: str, dadosAtualizados: dict = Body(...)):
+    # endpoint para atualização parcial dos dados de um aluno.
+    # apenas os campos fornecidos no corpo da requisição serão atualizados.
+
+    alunos = carregarAlunosCSV()
+    alunoEncontrado = next((a for a in alunos if a.get('matricula') == matricula), None)
+
+    if not alunoEncontrado:
+        raise HTTPException(status_code=404, detail=f'ALUNO COM "MATRÍCULA" {matricula} NÃO ENCONTRADO.')
+    
+    # validação de e-mail e matrícula duplicados para os dados atualizados
+    for key, value in dadosAtualizados.items():
+        if key == 'email' and value:
+            for aluno in alunos:
+                if aluno.get('matricula') != matricula and aluno.get('email') == value:
+                    raise HTTPException(status_code=409, detail=f'ERRO: "E-MAIL" {value} JÁ CADASTRADO PARA OUTRO ALUNO!')
+        if key == 'matricula' and value and value != matricula:
+            for aluno in alunos:
+                if aluno.get('matricula') == value:
+                    raise HTTPException(status_code=409, detail=f'ERRO: "MATRÍCULA" {value} JÁ CADASTRADA!')
+    
+    if atualizarAlunoCSV(matricula, dadosAtualizados):
+        return {'mensagem': f'ALUNO COM MATRÍCULA {matricula} ATUALIZADO COM SUCESSO!'}
+    else:
+        # isso não deve acontecer se a verificação acima for bem-sucedida, mas é um fallback seguro.
+        raise HTTPException(status_code=500, detail='ERRO AO ATUALIZAR ALUNO.')
