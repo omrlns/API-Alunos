@@ -36,6 +36,16 @@ def reescreverCSV(alunos: list):
         writer.writeheader()
         writer.writerows(alunos)
 
+def deletarAlunoCSV(matricula: str):
+    # deleta um aluno existente pela matrícula.
+    # retorna True se o aluno foi encontrado e deletado, False caso contrário.
+    alunos = carregarAlunosCSV()
+    alunosFiltrados = [aluno for aluno in alunos if aluno.get('matricula') != matricula]
+    if len(alunosFiltrados) < len(alunos): # se algum aluno foi removido
+        reescreverCSV(alunosFiltrados)
+        return True
+    return False
+
 def atualizarAlunoCSV(matricula: str, dadosAtualizados: dict):
     # atualiza os dados de um aluno existente pela matrícula.
     # retorna True se o aluno foi encontrado e atualizado, False caso contrário.
@@ -259,3 +269,17 @@ async def atualizarAlunoParcial(matricula: str, dadosAtualizados: dict = Body(..
     else:
         # isso não deve acontecer se a verificação acima for bem-sucedida, mas é um fallback seguro.
         raise HTTPException(status_code=500, detail='ERRO AO ATUALIZAR ALUNO.')
+    
+@app.delete('/alunos/{matricula}')
+async def deletarAluno(matricula: str):
+    # endpoint para deletar um aluno pela matrícula.
+    alunos = carregarAlunosCSV()
+    alunoEncontrado = next((a for a in alunos if a.get('matricula') == matricula), None)
+
+    if not alunoEncontrado:
+        raise HTTPException(status_code=404, detail=f'ALUNO COM MATRÍCULA {matricula} NÃO ENCONTRADO.')
+    
+    if deletarAlunoCSV(matricula):
+        return {'mensagem': f'ALUNO COM MATRÍCULA {matricula} DELETADO COM SUCESSO!'}
+    else:
+        raise HTTPException(status_code=500, detail='ERRO AO DELETAR ALUNO.')
