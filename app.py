@@ -178,3 +178,34 @@ async def listarAniversariantesHoje():
     # mapeando apenas nome e nascimento
     aniversariantes = list(map(lambda aluno: {'nome': aluno[0], 'nascimento': aluno[1]}, alunosEncontrados))
     return aniversariantes
+
+@app.put('/alunos/{matricula}')
+async def atualizarAlunoCompleto(matricula: str, novosDados: dict):
+    erros = validarDados(novosDados)
+    if erros:
+        raise HTTPException(status_code=400, detail=', '.join(erros))
+
+    alunos = carregarAlunosCSV()
+    alunoEncontrado = False
+
+    for i, aluno in enumerate(alunos):
+        if aluno['matricula'] == matricula:
+            alunoEncontrado = True
+            # verifica se novo e-mail pertence a outro aluno
+            for outro in alunos:
+                if outro['email'] == novosDados['email'] and outro['matricula'] != matricula:
+                    raise HTTPException(status_code=409, detail=f'"E-MAIL" {novosDados["email"]} JÁ ESTÁ EM USO POR OUTRO ALUNO.')
+            alunos[i] = novosDados  # substitui tudo
+            break
+
+    if not alunoEncontrado:
+        raise HTTPException(status_code=404, detail=f'ALUNO COM "MATRÍCULA" {matricula} NÃO ENCONTRADO.')
+
+    # reescreve o CSV com os dados atualizados
+    with open(CSV_FILE, mode='w', newline='', encoding='utf-8') as file:
+        header = ['nome', 'nascimento', 'matricula', 'email', 'senha']
+        writer = csv.DictWriter(file, fieldnames=header)
+        writer.writeheader()
+        writer.writerows(alunos)
+
+    return {'mensagem': 'DADOS DO ALUNO ATUALIZADOS COM SUCESSO!'}
