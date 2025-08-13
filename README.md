@@ -37,8 +37,8 @@ Para iniciar o servidor local, utilize:
 uvicorn app:app --reload
 ````
 
-A API estará disponível em:
-http://127.0.0.1:8000
+A API estará disponível em: http://127.0.0.1:8000
+
 A documentação interativa do FastAPI pode ser acessada em:
 
 Swagger UI → http://127.0.0.1:8000/docs
