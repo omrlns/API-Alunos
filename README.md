@@ -23,13 +23,11 @@ API para cadastro e gerenciamento de alunos, desenvolvida como parte de um proje
 # Clone este repositório
 git clone https://github.com/omrlns/PAQ-Project.git
 
-# Acesse a pasta do projeto
-cd PAQ-Project
-````
-
-```bash
 # Instale as dependências
 pip install -r requirements.txt
+
+# Acesse a pasta do projeto
+cd PAQ-Project 
 ````
 
 ▶️ Executando a API
