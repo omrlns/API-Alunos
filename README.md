@@ -43,11 +43,29 @@ A documentação interativa do FastAPI pode ser acessada em:
 
 Swagger UI → http://127.0.0.1:8000/docs
 
-🧪 Endpoints
-Método	Rota	Descrição
-GET	/alunos	Lista todos os alunos
-GET	/alunos/{id}	Busca aluno pelo ID
-POST	/alunos	Cadastra um novo aluno
-PUT	/alunos/{id}	Atualiza todos os dados do aluno
-PATCH	/alunos/{id}	Atualiza parcialmente um aluno
-DELETE	/alunos/{id}	Remove um aluno
+## 🧪 Endpoints
+
+### Listar alunos
+- **GET** `/alunos`  
+  Retorna a lista de todos os alunos.
+
+### Buscar aluno pelo ID
+- **GET** `/alunos/{id}`  
+  Retorna os dados de um aluno específico pelo seu ID.
+
+### Cadastrar novo aluno
+- **POST** `/alunos`  
+  Adiciona um novo aluno à base de dados.
+
+### Atualização completa
+- **PUT** `/alunos/{id}`  
+  Atualiza **todos os dados** de um aluno específico.
+
+### Atualização parcial
+- **PATCH** `/alunos/{id}`  
+  Atualiza **parte dos dados** de um aluno específico.
+
+### Remover aluno
+- **DELETE** `/alunos/{id}`  
+  Remove um aluno da base de dados pelo ID.
+
