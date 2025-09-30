@@ -1,4 +1,4 @@
-# 📚 PAQ-Project
+# 📚 API-Alunos
 
 API para cadastro e gerenciamento de alunos, desenvolvida como parte de um projeto de estudo para aprofundar conhecimentos em **Python**, **DuckDB** e **FastAPI**.
 
